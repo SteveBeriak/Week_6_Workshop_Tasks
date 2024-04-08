@@ -27,11 +27,14 @@ into the tree as a command line argument utilizing the commma character as delim
 executable is called with the required command line argument, the printed output should be the result of 
 inOrder traversal of the tree after deletion of the right subtree of the rootnode of the tree, where
 the data in the printed output is delimited using one whitespace character.
+5,7,3,6,4,2,8,1,9
 *******************************************************************************************************
 */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 
 struct node
 {
@@ -44,17 +47,43 @@ void insert_node(struct node** treePtr, int data);
 void inOrder(struct node* treePtr);
 void delete_tree(struct node** treePtr);
 
-int main() {
+int main(int argc, char *argv[]) {
 	int temp = 0;
+	char *token;
+	char array1[100];
+	int length;
+
 	struct node* treePtr = NULL;
-    printf("Enter the value of the new data member: ");
-	scanf("%d", &temp);
-    while (temp > 0)
-    {
-        insert_node(&treePtr, temp);
-        printf("Enter the value of the new data member: ");
-        scanf("%d", &temp);            
+
+    // printf("Enter the value of the new data member: ");
+	// scanf("%d", temp);
+
+	// checking if command argument is provided, replacement is initialized 
+    if (argc > 0){
+        // string equal argv[1] to filename
+        strcpy(array1, argv[1]);
     }
+	// fgets(array1,sizeof(array1),stdin);
+
+	token = strtok(array1,",");
+	temp = atoi(token);
+
+	while (token != NULL)
+	{	
+		// printf("%d\n",temp);
+		insert_node(&treePtr, temp);
+		token = strtok(NULL,",");
+		if (token != NULL)
+		{
+			temp = atoi(token);
+		}	
+	}
+    // while (temp > 0)
+    // {
+    //     insert_node(&treePtr, temp);
+    //     printf("Enter the value of the new data member: ");
+    //     scanf("%d", &temp);            
+    // }
     printf("Initial version of binary tree:\n");
     inOrder(treePtr);
     printf("\n");
@@ -99,7 +128,12 @@ void inOrder(struct node* treePtr)
 
 void delete_tree(struct node** treePtr)
 {
-       free(*treePtr);
-	   delete_tree(&((*treePtr)->leftPtr));
-       delete_tree(&((*treePtr)->rightPtr));
+	if (*treePtr != NULL)
+	{	
+		delete_tree(&((*treePtr)->leftPtr)); // LOOK LEFT
+    	delete_tree(&((*treePtr)->rightPtr)); // LOOK RIGHT
+		free(*treePtr); // VISIT
+		*treePtr = NULL;	// INFORM THE TREE ABOUT NODE DELETION
+	}
+
 }
